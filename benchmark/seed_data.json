@@ -1,0 +1,70 @@
+{
+  "note": "All PII in this file is FAKE / SYNTHETIC. Used only for testing.",
+  "emails": [
+    "priya.sharma@example.com",
+    "rahul.gupta123@testmail.in",
+    "amit.kumar@demo.org",
+    "sneha.patel@fake.co.in",
+    "deepika.singh@mock.com"
+  ],
+  "phones": [
+    "+91 98765 43210",
+    "+919876543210",
+    "098-7654-3210",
+    "+91-9123456789",
+    "91 87654 32109"
+  ],
+  "aadhaar": [
+    "2345 6789 0123",
+    "9876 5432 1098",
+    "1234 5678 9012",
+    "3456 7890 1234",
+    "234567890123"
+  ],
+  "pan": [
+    "ABCDE1234F",
+    "BNZPM2501F",
+    "CDHPK4567G",
+    "FGHIJ7890K",
+    "KLMNO1234P"
+  ],
+  "cards": [
+    "4111 1111 1111 1111",
+    "5500 0000 0000 0004",
+    "3782 822463 10005",
+    "4111-1111-1111-1111",
+    "4532015112830366"
+  ],
+  "upi": [
+    "priya@upi",
+    "rahul.gupta@paytm",
+    "amit@ybl",
+    "sneha.patel@okicici",
+    "deepika@oksbi"
+  ],
+  "ifsc": [
+    "SBIN0001234",
+    "HDFC0002345",
+    "ICIC0003456",
+    "UTIB0004567",
+    "PUNB0005678"
+  ],
+  "names": [
+    "Priya Sharma",
+    "Rahul Gupta",
+    "Amit Kumar Singh",
+    "Sneha Patel",
+    "Deepika Verma"
+  ],
+  "addresses": [
+    "42, MG Road, Bengaluru, Karnataka 560001",
+    "15/A, Nehru Nagar, New Delhi 110001",
+    "Block C, Sector 62, Noida, UP 201301",
+    "Plot 7, Anna Nagar, Chennai, TN 600040"
+  ],
+  "passwords": [
+    "SuperSecret123!",
+    "MyP@ssw0rd",
+    "Test1234$"
+  ]
+}

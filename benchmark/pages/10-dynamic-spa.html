@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>Dynamic SPA Test</title></head>
+<body>
+  <h1>Dynamic Content Test</h1>
+  <div id="content">
+    <p>Loading...</p>
+  </div>
+  <button id="loadBtn" onclick="loadContent()">Load User Data</button>
+  <button id="modalBtn" onclick="showModal()">Show Modal</button>
+  <div id="modal" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:white;padding:20px;border:2px solid #333;z-index:100;">
+    <h2>User Details</h2>
+    <p>Name: Priya Sharma</p>
+    <p>Card: 5500 0000 0000 0004</p>
+    <button onclick="document.getElementById('modal').style.display='none'">Close</button>
+  </div>
+  <script>
+    function loadContent() {
+      document.getElementById('content').innerHTML = `
+        <p>Name: Rahul Gupta</p>
+        <p>Email: rahul.gupta123@testmail.in</p>
+        <p>Phone: +91 98765 43210</p>
+        <p>Aadhaar: 1234 5678 9012</p>
+      `;
+    }
+    function showModal() {
+      document.getElementById('modal').style.display = 'block';
+    }
+  </script>
+</body>
+</html>

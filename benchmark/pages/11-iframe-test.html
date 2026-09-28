@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>Iframe Test</title></head>
+<body>
+  <h1>Page with Iframe</h1>
+  <p>Main page content with email: amit.kumar@demo.org</p>
+  <iframe id="inner" srcdoc="
+    <html><body>
+      <h2>Embedded Form</h2>
+      <label for='name'>Name</label>
+      <input id='name' type='text' value='Sneha Patel'>
+      <label for='phone'>Phone</label>
+      <input id='phone' type='tel' value='+91-9123456789'>
+      <label for='card'>Card Number</label>
+      <input id='card' type='text' value='3782 822463 10005'>
+    </body></html>
+  " style="width:100%;height:200px;border:1px solid #ccc;"></iframe>
+</body>
+</html>

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>Checkout</title></head>
+<body>
+  <h1>Checkout</h1>
+  <section aria-label="Shipping address">
+    <h2>Shipping Address</h2>
+    <label for="name">Full Name</label>
+    <input id="name" type="text" autocomplete="shipping name" value="Sneha Patel">
+    <label for="addr">Address</label>
+    <input id="addr" type="text" autocomplete="shipping street-address" value="15/A, Nehru Nagar, New Delhi 110001">
+    <label for="phone">Phone</label>
+    <input id="phone" type="tel" autocomplete="tel" value="+91-9123456789">
+    <label for="email">Email for receipt</label>
+    <input id="email" type="email" autocomplete="email" value="sneha.patel@fake.co.in">
+  </section>
+  <section aria-label="Payment">
+    <h2>Payment Details</h2>
+    <label for="card">Card Number</label>
+    <input id="card" type="text" autocomplete="cc-number" value="4111 1111 1111 1111">
+    <label for="expiry">Expiry</label>
+    <input id="expiry" type="text" autocomplete="cc-exp" value="12/28">
+    <label for="cvv">CVV</label>
+    <input id="cvv" type="password" autocomplete="cc-csc">
+    <label for="cardname">Name on Card</label>
+    <input id="cardname" type="text" autocomplete="cc-name" value="SNEHA PATEL">
+    <p>Or pay via UPI: <span>sneha.patel@okicici</span></p>
+  </section>
+  <button type="submit">Pay Rs 2,499</button>
+</body>
+</html>

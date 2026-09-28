@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>Payment</title></head>
+<body>
+  <h1>Make a Payment</h1>
+  <section aria-label="Payment method">
+    <h2>Payment Method</h2>
+    <div role="radiogroup">
+      <label><input type="radio" name="method" value="card" checked> Credit/Debit Card</label>
+      <label><input type="radio" name="method" value="upi"> UPI</label>
+      <label><input type="radio" name="method" value="netbanking"> Net Banking</label>
+    </div>
+    <div id="cardForm">
+      <label for="cardno">Card Number</label>
+      <input id="cardno" type="text" autocomplete="cc-number" value="5500 0000 0000 0004">
+      <label for="exp">Expiry</label>
+      <input id="exp" type="text" autocomplete="cc-exp" value="03/27">
+      <label for="cvv">CVV</label>
+      <input id="cvv" type="password" autocomplete="cc-csc">
+      <label for="cname">Cardholder Name</label>
+      <input id="cname" type="text" autocomplete="cc-name" value="AMIT KUMAR SINGH">
+    </div>
+    <div id="upiForm" style="display:none">
+      <label for="upiId">UPI ID</label>
+      <input id="upiId" type="text" value="amit@ybl">
+    </div>
+    <div id="bankForm" style="display:none">
+      <label for="ifsc">IFSC Code</label>
+      <input id="ifsc" type="text" value="ICIC0003456">
+      <label for="accno">Account Number</label>
+      <input id="accno" type="text" value="1234567890123">
+    </div>
+  </section>
+  <button type="submit">Pay Rs 5,999</button>
+</body>
+</html>

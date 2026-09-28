@@ -1,0 +1,45 @@
+# Environment and secrets
+.env
+.env.local
+.env.*.local
+
+# Dependencies
+node_modules/
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Build output
+extension/dist/
+backend/dist/
+*.tsbuildinfo
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Models cache
+models/
+*.onnx
+!benchmark/
+
+# Test output
+coverage/
+.pytest_cache/
+htmlcov/
+
+# Logs
+*.log
+
+# Keys and credentials
+*.pem
+*.key
+*.cert

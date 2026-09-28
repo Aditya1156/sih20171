@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>VeilAgent Demo - Fake Bank Login</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 500px; margin: 60px auto; padding: 20px; }
+    h1 { color: #1a1a5e; }
+    label { display: block; margin-top: 15px; font-weight: bold; }
+    input, textarea { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; }
+    button { margin-top: 20px; padding: 12px 30px; background: #1a1a5e; color: white; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; }
+    button:hover { background: #2a2a7e; }
+    .info { background: #f0f0ff; padding: 15px; border-radius: 8px; margin-top: 30px; font-size: 13px; color: #555; }
+    .pii-highlight { background: #fff3cd; padding: 2px 4px; border-radius: 3px; }
+  </style>
+</head>
+<body>
+  <h1>TestBank India - Login</h1>
+  <p>Welcome back! Please sign in to your account.</p>
+
+  <form onsubmit="return false;">
+    <label for="email">Email Address</label>
+    <input id="email" type="email" autocomplete="email" value="priya.sharma@example.com">
+
+    <label for="phone">Phone Number</label>
+    <input id="phone" type="tel" autocomplete="tel" value="+91 98765 43210">
+
+    <label for="pan">PAN Number</label>
+    <input id="pan" type="text" value="ABCDE1234F">
+
+    <label for="aadhaar">Aadhaar Number</label>
+    <input id="aadhaar" type="text" value="2345 6789 0123">
+
+    <label for="password">Password</label>
+    <input id="password" type="password" autocomplete="current-password" value="SuperSecret123!">
+
+    <button type="submit">Login to Account</button>
+  </form>
+
+  <p style="margin-top: 20px;">Your UPI ID: <span class="pii-highlight">priya@upi</span></p>
+  <p>IFSC: <span class="pii-highlight">SBIN0001234</span> | Account: 12345678901234</p>
+
+  <div class="info">
+    <strong>NOTE:</strong> All data on this page is FAKE / SYNTHETIC.
+    This page is for testing VeilAgent's PII detection and redaction.
+  </div>
+</body>
+</html>

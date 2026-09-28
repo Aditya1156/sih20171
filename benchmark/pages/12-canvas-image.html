@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>Canvas / Image PII Test</title></head>
+<body>
+  <h1>PII in Images and Canvas</h1>
+  <p>The text below is rendered on a canvas element:</p>
+  <canvas id="piiCanvas" width="400" height="200" style="border:1px solid #ccc;"></canvas>
+  <script>
+    const ctx = document.getElementById('piiCanvas').getContext('2d');
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, 400, 200);
+    ctx.fillStyle = '#000000';
+    ctx.font = '16px Arial';
+    ctx.fillText('Name: Deepika Verma', 20, 40);
+    ctx.fillText('Aadhaar: 3456 7890 1234', 20, 70);
+    ctx.fillText('Email: deepika.singh@mock.com', 20, 100);
+    ctx.fillText('Phone: +91 87654 32109', 20, 130);
+    ctx.fillText('PAN: KLMNO1234P', 20, 160);
+  </script>
+  <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='150'%3E%3Crect width='300' height='150' fill='%23fff'/%3E%3Ctext x='10' y='30' font-size='14'%3EName: Priya Sharma%3C/text%3E%3Ctext x='10' y='55' font-size='14'%3EAadhaar: 2345 6789 0123%3C/text%3E%3Ctext x='10' y='80' font-size='14'%3ECard: 4532015112830366%3C/text%3E%3C/svg%3E" alt="ID Card">
+</body>
+</html>

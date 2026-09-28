@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>Hidden / Adversarial Fields</title></head>
+<body>
+  <h1>Hidden Fields & Honeypots</h1>
+  <form>
+    <label for="name">Name</label>
+    <input id="name" type="text" value="Amit Kumar Singh">
+    <!-- Hidden fields containing PII -->
+    <input type="hidden" name="userId" value="priya.sharma@example.com">
+    <input type="hidden" name="token" value="abc123">
+    <input type="hidden" name="phone" value="+919876543210">
+    <input type="hidden" name="aadhaar_hash" value="2345678901230">
+    <!-- Honeypot field (should not be filled) -->
+    <div style="position:absolute;left:-9999px;">
+      <label for="hp_email">Leave empty</label>
+      <input id="hp_email" type="text" name="hp_email" tabindex="-1" autocomplete="off">
+    </div>
+    <!-- Off-screen but contains PII -->
+    <div style="overflow:hidden;height:0;">
+      <p>IFSC: PUNB0005678</p>
+      <p>Account: 98765432101</p>
+    </div>
+    <!-- Data attributes with PII -->
+    <div data-user-email="amit.kumar@demo.org" data-user-phone="+91-9123456789" id="userData">
+      <button type="submit">Submit</button>
+    </div>
+  </form>
+</body>
+</html>

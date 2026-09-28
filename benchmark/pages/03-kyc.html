@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>KYC Verification</title></head>
+<body>
+  <h1>KYC Verification</h1>
+  <section aria-label="Personal details">
+    <h2>Personal Details</h2>
+    <label for="name">Full Name</label>
+    <input id="name" type="text" value="Amit Kumar Singh">
+    <label for="dob">Date of Birth</label>
+    <input id="dob" type="date" value="1990-05-15">
+    <label for="aadhaar">Aadhaar Number</label>
+    <input id="aadhaar" type="text" autocomplete="off" value="2345 6789 0123" pattern="\d{4}\s?\d{4}\s?\d{4}">
+    <label for="pan">PAN Number</label>
+    <input id="pan" type="text" autocomplete="off" value="ABCDE1234F" pattern="[A-Z]{5}[0-9]{4}[A-Z]">
+    <label for="address">Address</label>
+    <textarea id="address">42, MG Road, Bengaluru, Karnataka 560001</textarea>
+  </section>
+  <button type="submit">Submit KYC</button>
+</body>
+</html>
