@@ -126,13 +126,20 @@ function generatePhone(): string {
   return `+91 ${firstDigit}${rest}`;
 }
 
-function computeVerhoeffCheckDigit(digits: string): number {
+function verhoeffCheckLocal(num: string): boolean {
   let c = 0;
-  const len = digits.length;
+  const len = num.length;
   for (let i = 0; i < len; i++) {
-    c = VERHOEFF_D[c][VERHOEFF_P[((i + 1) % 8)][parseInt(digits[len - 1 - i], 10)]];
+    c = VERHOEFF_D[c][VERHOEFF_P[(i + 1) % 8][parseInt(num[len - 1 - i], 10)]];
   }
-  return VERHOEFF_INV[c];
+  return c === 0;
+}
+
+function computeVerhoeffCheckDigit(partial: string): number {
+  for (let d = 0; d <= 9; d++) {
+    if (verhoeffCheckLocal(partial + d.toString())) return d;
+  }
+  return 0;
 }
 
 function generateAadhaar(): string {
