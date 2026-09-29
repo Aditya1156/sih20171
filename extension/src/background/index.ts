@@ -4,14 +4,21 @@ import { sanitise } from '../redactor/sanitise';
 import { clearVault } from '../vault/vault';
 import { resetCounters } from '../redactor/placeholder';
 import { guardRequest } from '../redactor/outbound-guard';
+import { calculatePrivacyScore } from '../detectors/privacy-score';
+import { generateReport, downloadReportBackground } from '../report/privacy-report';
+import { computePrivacyDiff } from '../report/privacy-diff';
 import type { ElementInfo, Action } from '../shared/schemas';
 import type { SensitivityMode } from '../detectors/types';
 import type { RedactionEntry } from '../ui/PrivacyInspector';
+import type { DetectionResult } from '../detectors/pipeline';
 
 const BACKEND_URL = 'http://localhost:8000';
 const API_TOKEN = 'veilagent-local-dev-token-2026';
 
 let running = false;
+let lastDetectionResult: DetectionResult | null = null;
+let lastUrl = '';
+let lastTitle = '';
 
 chrome.sidePanel
   .setPanelBehavior({ openPanelOnActionClick: true })
@@ -70,6 +77,31 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     return true;
   }
 
+  if (message.type === 'SCAN_PAGE') {
+    const sensitivity = (message.sensitivity ?? 'strict') as SensitivityMode;
+    scanPage(sensitivity);
+    sendResponse({ ok: true });
+    return true;
+  }
+
+  if (message.type === 'TOGGLE_OVERLAY') {
+    toggleOverlay(message.visible as boolean);
+    sendResponse({ ok: true });
+    return true;
+  }
+
+  if (message.type === 'FAKE_FILL') {
+    fakeFill();
+    sendResponse({ ok: true });
+    return true;
+  }
+
+  if (message.type === 'EXPORT_REPORT') {
+    exportReport();
+    sendResponse({ ok: true });
+    return true;
+  }
+
   if (message.type === 'CONFIRM_RESPONSE') {
     sendResponse({ ok: true });
     return true;
@@ -86,6 +118,87 @@ function notify(msg: Record<string, unknown>) {
   chrome.runtime.sendMessage(msg).catch(() => {});
 }
 
+async function getActiveTab() {
+  const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
+  return tabs[0];
+}
+
+async function scanPage(mode: SensitivityMode) {
+  try {
+    const tab = await getActiveTab();
+    if (!tab?.id) {
+      notify({ type: 'SCAN_RESULT', score: { score: 0, level: 'safe', breakdown: {} } });
+      return;
+    }
+
+    const snapshot = await perceiveTab(tab.id);
+    const elements = snapshot.dom.elements as ElementInfo[];
+    const detectionResult = runDetectionPipeline(elements, mode);
+
+    lastDetectionResult = detectionResult;
+    lastUrl = snapshot.dom.url;
+    lastTitle = snapshot.dom.title;
+
+    const score = calculatePrivacyScore(detectionResult, snapshot.dom.url);
+    notify({ type: 'SCAN_RESULT', score });
+
+    await chrome.tabs.sendMessage(tab.id, {
+      type: 'SCAN_PII',
+      detections: serializeDetections(detectionResult),
+    }).catch(() => {});
+  } catch {
+    notify({ type: 'SCAN_RESULT', score: { score: 0, level: 'safe', breakdown: {} } });
+  }
+}
+
+function serializeDetections(result: DetectionResult) {
+  const entries: Array<{ elementId: string; type: string; confidence: number }> = [];
+  for (const [elementId, detections] of result.elementDetections) {
+    for (const d of detections) {
+      entries.push({ elementId, type: d.type, confidence: d.confidence });
+    }
+  }
+  return entries;
+}
+
+async function toggleOverlay(visible: boolean) {
+  try {
+    const tab = await getActiveTab();
+    if (!tab?.id) return;
+    await chrome.tabs.sendMessage(tab.id, { type: 'TOGGLE_PII_OVERLAY', visible }).catch(() => {});
+  } catch {
+    // Tab not available
+  }
+}
+
+async function fakeFill() {
+  try {
+    const tab = await getActiveTab();
+    if (!tab?.id) {
+      notify({ type: 'FILL_RESULT', result: { filled: 0, fields: [] } });
+      return;
+    }
+    const result = await chrome.tabs.sendMessage(tab.id, { type: 'AUTO_FILL_FAKE' });
+    notify({ type: 'FILL_RESULT', result });
+  } catch {
+    notify({ type: 'FILL_RESULT', result: { filled: 0, fields: [] } });
+  }
+}
+
+async function exportReport() {
+  if (!lastDetectionResult) return;
+
+  const score = calculatePrivacyScore(lastDetectionResult, lastUrl);
+  const report = generateReport({
+    url: lastUrl,
+    title: lastTitle,
+    detectionResult: lastDetectionResult,
+    privacyScore: score,
+  });
+
+  downloadReportBackground(report);
+}
+
 async function runAgent(task: string, mode: SensitivityMode) {
   const maxSteps = 15;
   const history: Action[] = [];
@@ -97,16 +210,13 @@ async function runAgent(task: string, mode: SensitivityMode) {
       return;
     }
 
-    // 1. Get active tab
-    const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
-    const tab = tabs[0];
+    const tab = await getActiveTab();
     if (!tab?.id) {
       notify({ type: 'AGENT_STEP', step, action: { type: 'fail', reason: 'No active tab' } });
       notify({ type: 'AGENT_DONE' });
       return;
     }
 
-    // 2. Perceive
     let snapshot;
     try {
       snapshot = await perceiveTab(tab.id);
@@ -117,12 +227,13 @@ async function runAgent(task: string, mode: SensitivityMode) {
     }
 
     const elements = snapshot.dom.elements as ElementInfo[];
-
-    // 3. Detect
     const detectionResult = runDetectionPipeline(elements, mode);
     const marked = markSensitiveElements(elements, detectionResult);
 
-    // 4. Redact & Sanitise
+    lastDetectionResult = detectionResult;
+    lastUrl = snapshot.dom.url;
+    lastTitle = snapshot.dom.title;
+
     clearVault();
     resetCounters();
     const { context, placeholderMap } = await sanitise({
@@ -136,7 +247,9 @@ async function runAgent(task: string, mode: SensitivityMode) {
       mode,
     });
 
-    // Build inspector data
+    const diff = computePrivacyDiff(elements, context.elements, detectionResult);
+    notify({ type: 'DIFF_UPDATE', diff });
+
     const redactions: RedactionEntry[] = [];
     for (const [placeholder, value] of placeholderMap.placeholderToValue) {
       const masked = value.length > 8
@@ -149,7 +262,6 @@ async function runAgent(task: string, mode: SensitivityMode) {
       });
     }
 
-    // 5. Guard check
     const requestBody = JSON.stringify({
       context: { ...context, screenshotBase64: undefined },
       task,
@@ -169,7 +281,6 @@ async function runAgent(task: string, mode: SensitivityMode) {
       return;
     }
 
-    // Send inspector data
     notify({
       type: 'INSPECTOR_UPDATE',
       data: {
@@ -179,7 +290,6 @@ async function runAgent(task: string, mode: SensitivityMode) {
       },
     });
 
-    // 6. Call backend
     let action: Action;
     let thought: string | undefined;
     try {
@@ -209,7 +319,6 @@ async function runAgent(task: string, mode: SensitivityMode) {
       action = { type: 'fail', reason: `Network error: ${(err as Error).message}` };
     }
 
-    // 7. Notify UI
     notify({ type: 'AGENT_STEP', step, action, thought });
     history.push(action);
 
@@ -218,14 +327,12 @@ async function runAgent(task: string, mode: SensitivityMode) {
       return;
     }
 
-    // 8. Execute action in content script
     try {
       await chrome.tabs.sendMessage(tab.id, { type: 'EXECUTE_ACTION', action });
     } catch {
-      // Action execution failed, continue
+      // Action execution failed
     }
 
-    // Small delay between steps
     await new Promise((r) => setTimeout(r, 1000));
   }
 
